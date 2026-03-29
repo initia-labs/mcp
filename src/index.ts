@@ -23,7 +23,10 @@ async function main() {
 
   const transport = new StdioServerTransport();
 
+  let shuttingDown = false;
   const shutdown = async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
     logger.info('Shutting down...');
     await chainManager.close();
     await server.close();
@@ -32,6 +35,20 @@ async function main() {
 
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
+
+  // When the client disconnects, stdin emits 'end'. Without this handler
+  // the server process hangs indefinitely, blocking client reconnection.
+  process.stdin.on('end', shutdown);
+
+  // Suppress EPIPE errors on stdout that occur when the client disconnects
+  // mid-write. Without this, the process crashes with an unhandled error.
+  process.stdout.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EPIPE') {
+      shutdown();
+      return;
+    }
+    logger.error('stdout error', { error: err.message });
+  });
 
   await server.connect(transport);
   logger.info('@initia/mcp server started on stdio');
