@@ -1,8 +1,11 @@
 {
   "name": "@initia/mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An MCP control plane for the Initia's interwoven ecosystem",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "bin": {
     "initia-mcp": "./dist/index.js",
     "initctl": "./dist/cli.js"
@@ -16,7 +19,8 @@
     "lint:fix": "eslint src/ tests/ --fix",
     "test": "vitest run --exclude tests/smoke.test.ts",
     "test:smoke": "vitest run tests/smoke.test.ts",
-    "test:watch": "vitest --exclude tests/smoke.test.ts"
+    "test:watch": "vitest --exclude tests/smoke.test.ts",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mcp",

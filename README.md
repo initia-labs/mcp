@@ -35,8 +35,61 @@ Add to `claude_desktop_config.json`:
 {
   "mcpServers": {
     "initia": {
-      "command": "node",
-      "args": ["/path/to/initia-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@initia/mcp"],
+      // optional — see Environment Variables below
+      "env": {
+        "INITIA_KEY": "your mnemonic words ...",
+        "INITIA_NETWORK": "mainnet"
+      }
+    }
+  }
+}
+```
+
+### Claude Code
+
+```bash
+claude mcp add initia -s user -- npx -y @initia/mcp
+
+# optional — see Environment Variables below
+claude mcp add initia -s user \
+  -e INITIA_KEY="your mnemonic words ..." \
+  -e INITIA_NETWORK=mainnet \
+  -- npx -y @initia/mcp
+```
+
+### Codex
+
+Add to `codex.json` (or pass via `codex --mcp-config codex.json`):
+
+```json
+{
+  "mcpServers": {
+    "initia": {
+      "command": "npx",
+      "args": ["-y", "@initia/mcp"],
+      // optional — see Environment Variables below
+      "env": {
+        "INITIA_KEY": "your mnemonic words ...",
+        "INITIA_NETWORK": "mainnet"
+      }
+    }
+  }
+}
+```
+
+### Gemini CLI
+
+Add to `.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "initia": {
+      "command": "npx",
+      "args": ["-y", "@initia/mcp"],
+      // optional — see Environment Variables below
       "env": {
         "INITIA_KEY": "your mnemonic words ...",
         "INITIA_NETWORK": "mainnet"
