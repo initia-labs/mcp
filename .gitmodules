@@ -1,0 +1,3 @@
+[submodule "vendor/initia.js"]
+	path = vendor/initia.js
+	url = git@github.com:Vritra4/initia.js.git

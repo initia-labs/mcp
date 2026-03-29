@@ -1,0 +1,28 @@
+import { registry } from './registry.js';
+
+registry.registerGroup('account', 'Account information');
+registry.registerGroup('address', 'Address utilities');
+registry.registerGroup('bank', 'Token transfers');
+registry.registerGroup('bridge', 'Cross-chain bridge operations');
+registry.registerGroup('chain', 'Chain information and configuration');
+registry.registerGroup('delegation', 'Staking delegation queries');
+registry.registerGroup('denom', 'Token denomination utilities');
+registry.registerGroup('distribution', 'Staking reward distribution');
+registry.registerGroup('event', 'Transaction event parsing');
+registry.registerGroup('evm', 'EVM contract operations (Minievm only)');
+registry.registerGroup('governance', 'Governance proposals and voting');
+registry.registerGroup('ibc', 'IBC transfers and channels');
+registry.registerGroup('ledger', 'Ledger hardware wallet');
+registry.registerGroup('move', 'Move VM operations (Initia L1 / Minimove)');
+registry.registerGroup('opbridge', 'OPInit bridge configuration');
+registry.registerGroup('portfolio', 'Cross-chain portfolio');
+registry.registerGroup('simulate', 'Transaction simulation');
+registry.registerGroup('staking', 'Staking pool and management');
+registry.registerGroup('token', 'Token search, metadata, and balances');
+registry.registerGroup('tx', 'Transaction queries');
+registry.registerGroup('username', '.init username service');
+registry.registerGroup('validator', 'Validator information');
+registry.registerGroup('vip', 'VIP lock-staking and gauge voting');
+registry.registerGroup('wasm', 'CosmWasm contract operations (Miniwasm only)');
+registry.registerGroup('authz', 'Authorization grants and delegation');
+registry.registerGroup('feegrant', 'Fee grant allowances');

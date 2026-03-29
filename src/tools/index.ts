@@ -1,0 +1,30 @@
+// Side-effect imports: each module registers its tools with the singleton registry.
+import './groups.js';
+import './account.js';
+import './address.js';
+import './bank.js';
+import './bridge.js';
+import './chain.js';
+import './delegation.js';
+import './denom.js';
+import './distribution.js';
+import './events.js';
+import './evm.js';
+import './governance.js';
+import './ibc.js';
+import './ledger.js';
+import './move.js';
+import './opbridge.js';
+import './portfolio.js';
+import './simulate.js';
+import './staking.js';
+import './token.js';
+import './tx.js';
+import './usernames.js';
+import './validator.js';
+import './vip.js';
+import './wasm.js';
+import './authz.js';
+import './feegrant.js';
+
+export { registry } from './registry.js';
