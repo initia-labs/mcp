@@ -20,6 +20,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: false, destructiveHint: false },
+  addressFields: { 'sends[].to': 'bech32' },
   handler: async ({ chain, sends, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);

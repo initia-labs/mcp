@@ -4,7 +4,6 @@ import { chainParam, addressParam, txHashParam, confirmParam, dryRunParam, memoP
 import { success } from '../response.js';
 import { executeMutation } from './tx-executor.js';
 import { BridgeError } from '../errors.js';
-import { resolveAddress } from './resolver.js';
 import { fetchWithdrawals, fetchWithdrawal } from '@initia/initia.js/bridge';
 
 registry.register({
@@ -36,12 +35,12 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ chain, address, limit, offset, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const chainInfo = await chainManager.getChainInfo(chain, network);
     if (!chainInfo.executorUri) throw new Error(`No executor URI for chain ${chain}`);
-    const results = await fetchWithdrawals(chainInfo.executorUri, addr, { limit, offset });
-    return success({ chain, address: addr, withdrawals: results });
+    const results = await fetchWithdrawals(chainInfo.executorUri, address, { limit, offset });
+    return success({ chain, address, withdrawals: results });
   },
 });
 
@@ -210,6 +209,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: false, destructiveHint: false },
+  addressFields: { to: 'bech32' },
   handler: async ({ bridgeId, to, amount, denom, data, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext('initia', network);
@@ -241,6 +241,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: false, destructiveHint: false },
+  addressFields: { to: 'bech32' },
   handler: async ({ chain, to, amount, denom, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);

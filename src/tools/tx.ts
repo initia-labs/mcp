@@ -1,10 +1,7 @@
 import { z } from 'zod';
-import { AccAddress, isValidEvmAddress } from '@initia/initia.js/util';
 import { registry } from './registry.js';
 import { chainParam, addressParam, txHashParam, paginationParams, networkParam } from '../schemas/common.js';
 import { success } from '../response.js';
-import { resolveAddress } from './resolver.js';
-import { ValidationError } from '../errors.js';
 import { logger } from '../logger.js';
 
 registry.register({
@@ -60,33 +57,30 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ chain, address, limit, offset, reverse, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
-    if (!AccAddress.validate(addr) && !isValidEvmAddress(addr)) {
-      throw new ValidationError(`Invalid address format: ${addr}`);
-    }
     const ctx = await chainManager.getContext(chain, network);
     const chainId: string = ctx.chainId;
 
     const scanApi = chainManager.getScanApi();
     if (scanApi) {
       try {
-        const result = await scanApi.getAccountTxs(chainId, addr, { limit, offset });
+        const result = await scanApi.getAccountTxs(chainId, address, { limit, offset });
         return success({
           source: 'scan-api',
-          address: addr,
+          address,
           txs: result.items,
           totalCount: result.total,
           hasMore: result.total > offset + limit,
         });
       } catch (err) {
-        logger.warn('scan-api fallback to RPC', { error: String(err), address: addr });
+        logger.warn('scan-api fallback to RPC', { error: String(err), address });
       }
     }
 
     // RPC fallback — try unbounded query first, then windowed iteration for
     // L2 chains that require a height range (<=100 blocks) on txSearch.
-    const baseQuery = `message.sender='${addr}'`;
+    const baseQuery = `message.sender='${address}'`;
     const order = reverse ? 'asc' : 'desc';
 
     try {
@@ -95,7 +89,7 @@ registry.register({
       const totalCount = Number(result.total_count);
       return success({
         source: 'rpc',
-        address: addr,
+        address,
         txs: result.txs,
         totalCount,
         hasMore: totalCount > offset + limit,
@@ -131,7 +125,7 @@ registry.register({
 
     return success({
       source: 'rpc-windowed',
-      address: addr,
+      address,
       txs: collected,
       scannedDownTo: cursor + 1,
       hasMore: cursor > 0 && collected.length >= limit,

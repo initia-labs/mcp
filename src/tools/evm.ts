@@ -22,6 +22,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'hex' },
   handler: async ({ chain, address, topics, fromBlock, toBlock, network }, { chainManager }) => {
     const chainInfo = await chainManager.getChainInfo(chain, network);
     assertVmCompatible('evm_get_logs', chainInfo.chainType);
@@ -88,6 +89,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'hex' },
   handler: async ({ chain, address, network }, { chainManager }) => {
     const chainInfo = await chainManager.getChainInfo(chain, network);
     assertVmCompatible('evm_get_code', chainInfo.chainType);
@@ -109,6 +111,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'hex' },
   handler: async ({ chain, address, slot, network }, { chainManager }) => {
     const chainInfo = await chainManager.getChainInfo(chain, network);
     assertVmCompatible('evm_get_storage_at', chainInfo.chainType);
@@ -131,6 +134,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { contractAddress: 'hex', sender: 'bech32' },
   handler: async ({ chain, contractAddress, input, sender, network }, { chainManager }) => {
     const ctx = await chainManager.getContext(chain, network);
     assertVmCompatible('evm_call', ctx.chainType);
@@ -220,6 +224,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: false, destructiveHint: false },
+  addressFields: { contractAddress: 'hex' },
   handler: async ({ chain, contractAddress, input, value, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);

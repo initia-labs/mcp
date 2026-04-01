@@ -1,19 +1,4 @@
-import { ChainManager } from '../initia/chain-manager.js';
 import { ValidationError } from '../errors.js';
-
-const SELF_ALIASES = new Set(['me', 'self', 'my', 'signer']);
-
-/**
- * Resolve "me"/"self"/"my"/"signer" to the signer's address.
- * Passes through any other input unchanged.
- */
-export function resolveAddress(input: string, chainManager: ChainManager): string {
-  if (SELF_ALIASES.has(input.toLowerCase())) {
-    chainManager.requireSigner();
-    return chainManager.getSignerAddress()!;
-  }
-  return input;
-}
 
 /**
  * Resolve a validator by moniker (name) or address.
