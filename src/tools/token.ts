@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { registry } from './registry.js';
 import { chainParam, addressParam, denomParam, networkParam } from '../schemas/common.js';
 import { success } from '../response.js';
-import { resolveAddress } from './resolver.js';
 import { getDenomType, formatTokenAmount } from '@initia/initia.js/util';
 
 function isContractDenom(denom: string): boolean {
@@ -102,17 +101,17 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ chain, address, denom, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const ctx = await chainManager.getContext(chain, network);
     if (isContractDenom(denom)) {
       const contract = ctx.getTokenContract(denom);
-      const balance = await contract.balanceOf(addr);
-      return success({ chainType: ctx.chainType, address: addr, denom, balance: balance.toString() });
+      const balance = await contract.balanceOf(address);
+      return success({ chainType: ctx.chainType, address, denom, balance: balance.toString() });
     }
     // Native denom — use bank module
-    const balances = await ctx.getBalance({ address: addr, denom });
-    return success({ chainType: ctx.chainType, address: addr, denom, balance: balances });
+    const balances = await ctx.getBalance({ address, denom });
+    return success({ chainType: ctx.chainType, address, denom, balance: balances });
   },
 });
 

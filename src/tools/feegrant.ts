@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { AccAddress, isValidEvmAddress } from '@initia/initia.js/util';
 import { registry } from './registry.js';
 import { chainParam, networkParam, confirmParam, dryRunParam, memoParam } from '../schemas/common.js';
 import { success } from '../response.js';
@@ -16,10 +15,8 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { grantee: 'bech32' },
   handler: async ({ chain, grantee, network }, { chainManager }) => {
-    if (!AccAddress.validate(grantee) && !isValidEvmAddress(grantee)) {
-      throw new ValidationError(`Invalid grantee address: "${grantee}"`);
-    }
     const ctx = await chainManager.getContext(chain, network);
     const result = await ctx.client.feegrant.allowances({ grantee });
     return success(result);
@@ -43,12 +40,9 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: false, destructiveHint: false },
+  addressFields: { grantee: 'bech32' },
   handler: async ({ chain, grantee, spendLimit, expiration, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
-
-    if (!AccAddress.validate(grantee) && !isValidEvmAddress(grantee)) {
-      throw new ValidationError(`Invalid address format: ${grantee}`);
-    }
 
     if (!spendLimit && expiration === undefined) {
       throw new ValidationError('At least one of spendLimit or expiration is required to prevent unbounded fee grants.');
@@ -90,12 +84,9 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: false, destructiveHint: false },
+  addressFields: { grantee: 'bech32' },
   handler: async ({ chain, grantee, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
-
-    if (!AccAddress.validate(grantee) && !isValidEvmAddress(grantee)) {
-      throw new ValidationError(`Invalid address format: ${grantee}`);
-    }
 
     const ctx = await chainManager.getContext(chain, network);
     const granter = chainManager.getSignerAddress()!;

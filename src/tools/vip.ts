@@ -5,7 +5,7 @@ import { addressParam, confirmParam, dryRunParam, memoParam, networkParam } from
 import { success } from '../response.js';
 import { executeMutation } from './tx-executor.js';
 import { createVip } from '@initia/initia.js/vip';
-import { resolveValidatorAddress, resolveAddress } from './resolver.js';
+import { resolveValidatorAddress } from './resolver.js';
 
 async function getVip(chainManager: ChainManager, network?: 'mainnet' | 'testnet') {
   const ctx = await chainManager.getContext('initia', network);
@@ -31,10 +31,10 @@ registry.register({
   description: 'Get all VIP lock-staking positions for an address. Shows locked delegations with metadata, validator, amount, and release time.',
   schema: { address: addressParam, network: networkParam },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ address, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const { vip } = await getVip(chainManager, network);
-    const positions = await vip.getPositions(addr);
+    const positions = await vip.getPositions(address);
     return success(positions);
   },
 });
@@ -45,10 +45,10 @@ registry.register({
   description: 'Get VIP gauge voting power for an address.',
   schema: { address: addressParam, network: networkParam },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ address, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const { vip } = await getVip(chainManager, network);
-    const power = await vip.getVotingPower(addr);
+    const power = await vip.getVotingPower(address);
     return success({ votingPower: power.toString() });
   },
 });
@@ -59,10 +59,10 @@ registry.register({
   description: 'Get VIP vesting positions for an address from the indexer API. Shows bridge rewards with vesting schedules, including initial/claimable/claimed/locked reward breakdowns.',
   schema: { address: addressParam, network: networkParam },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ address, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const { vip } = await getVip(chainManager, network);
-    const positions = await vip.getVestingPositions(addr);
+    const positions = await vip.getVestingPositions(address);
     return success(positions.map(p => ({
       bridgeId: p.bridgeId,
       version: p.version,
@@ -88,10 +88,10 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ address, cycle, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const { vip } = await getVip(chainManager, network);
-    const info = await vip.getVoteInfo(cycle, addr);
+    const info = await vip.getVoteInfo(cycle, address);
     return success({
       maxVotingPower: info.maxVotingPower.toString(),
       votingPower: info.votingPower.toString(),
@@ -106,10 +106,10 @@ registry.register({
   description: 'Get claimable VIP rewards for an address from the VIP indexer API.',
   schema: { address: addressParam, network: networkParam },
   annotations: { readOnlyHint: true },
+  addressFields: { address: 'bech32' },
   handler: async ({ address, network }, { chainManager }) => {
-    const addr = resolveAddress(address, chainManager);
     const { vip } = await getVip(chainManager, network);
-    const rewards = await vip.getClaimableRewards(addr);
+    const rewards = await vip.getClaimableRewards(address);
     return success(rewards.map(r => ({
       bridgeId: r.bridgeId,
       version: r.version,

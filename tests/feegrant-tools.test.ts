@@ -35,8 +35,13 @@ vi.mock('@initia/initia.js/vip', () => ({
 }));
 
 vi.mock('@initia/initia.js/util', () => ({
-  AccAddress: { validate: (a: string) => a.startsWith('init1') },
+  AccAddress: {
+    validate: (a: string) => a.startsWith('init1'),
+    fromHex: (a: string) => 'init1' + a.replace('0x', '').slice(0, 10),
+    toHex: (a: string) => '0x' + a.slice(5),
+  },
   isValidEvmAddress: (a: string) => /^0x[0-9a-fA-F]{40}$/.test(a),
+  toChecksumAddress: (a: string) => a,
 }));
 
 vi.mock('@initia/initia.js/client', () => ({
@@ -99,7 +104,7 @@ describe('feegrant_allowances tool', () => {
     expect(mockAllowances).toHaveBeenCalledWith({ grantee: VALID_BECH32 });
   });
 
-  it('accepts a valid EVM address as grantee', async () => {
+  it('accepts a valid EVM address as grantee (converted to bech32)', async () => {
     const tool = registry.get('feegrant_allowances')!;
     const result = await tool.handler(
       { chain: 'minievm', grantee: VALID_EVM },
@@ -107,7 +112,9 @@ describe('feegrant_allowances tool', () => {
     );
 
     expect(result.isError).toBeFalsy();
-    expect(mockAllowances).toHaveBeenCalledWith({ grantee: VALID_EVM });
+    // EVM address is normalized to bech32 before querying
+    const call = mockAllowances.mock.calls[0][0];
+    expect(call.grantee).toMatch(/^init1/);
   });
 
   it('rejects an invalid grantee address with ValidationError', async () => {
@@ -118,7 +125,7 @@ describe('feegrant_allowances tool', () => {
         { chain: 'initia', grantee: INVALID_ADDRESS },
         { chainManager: mockChainManager } as any,
       ),
-    ).rejects.toThrow('Invalid grantee address');
+    ).rejects.toThrow('Invalid address');
 
     expect(mockChainManager.getContext).not.toHaveBeenCalled();
     expect(mockAllowances).not.toHaveBeenCalled();

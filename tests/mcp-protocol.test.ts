@@ -117,7 +117,7 @@ describe('MCP Protocol Integration', () => {
   it('calls account_get tool successfully', async () => {
     const result = await client.callTool({
       name: 'account_get',
-      arguments: { chain: 'initia', address: 'init1test' },
+      arguments: { chain: 'initia', address: 'init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d' },
     });
     expect(result.isError).toBeFalsy();
     const text = (result.content as any)[0]?.text;
@@ -137,7 +137,7 @@ describe('MCP Protocol Integration', () => {
   it('returns WRONG_VM error for incompatible tool', async () => {
     const result = await client.callTool({
       name: 'evm_call',
-      arguments: { chain: 'initia', contractAddress: '0x1', input: '0x00' },
+      arguments: { chain: 'initia', contractAddress: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', input: '0x00' },
     });
     expect(result.isError).toBe(true);
     const text = (result.content as any)[0]?.text;
@@ -157,7 +157,7 @@ describe('MCP Protocol Integration', () => {
 
     const result = await noSignerClient.callTool({
       name: 'bank_send',
-      arguments: { chain: 'initia', sends: [{ to: 'init1abc', amount: '1000', denom: 'uinit' }] },
+      arguments: { chain: 'initia', sends: [{ to: 'init1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpqr5e3d', amount: '1000', denom: 'uinit' }] },
     });
     expect(result.isError).toBe(true);
     const text = (result.content as any)[0]?.text;

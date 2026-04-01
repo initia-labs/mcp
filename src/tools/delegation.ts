@@ -1,7 +1,6 @@
 import { registry } from './registry.js';
 import { chainParam, addressParam, paginationParams, networkParam } from '../schemas/common.js';
 import { success } from '../response.js';
-import { resolveAddress } from './resolver.js';
 
 registry.register({
   name: 'delegation_get',
@@ -9,8 +8,8 @@ registry.register({
   description: 'Get staking state for an address: delegations, rewards, and unbonding entries. Returns paginated results (default 10). Use limit/offset to navigate.',
   schema: { chain: chainParam, delegatorAddr: addressParam, ...paginationParams, network: networkParam },
   annotations: { readOnlyHint: true },
-  handler: async ({ chain, delegatorAddr: rawAddr, limit, offset, reverse, network }, { chainManager }) => {
-    const delegatorAddr = resolveAddress(rawAddr, chainManager);
+  addressFields: { delegatorAddr: 'bech32' },
+  handler: async ({ chain, delegatorAddr, limit, offset, reverse, network }, { chainManager }) => {
     const ctx = await chainManager.getContext(chain, network);
     const pagination = { limit: BigInt(limit ?? 10), offset: BigInt(offset ?? 0), reverse };
     const [delegations, unbonding] = await Promise.all([

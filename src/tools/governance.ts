@@ -18,6 +18,7 @@ registry.register({
     network: networkParam,
   },
   annotations: { readOnlyHint: true },
+  addressFields: { voter: 'bech32', depositor: 'bech32' },
   handler: async ({ chain, proposalStatus, voter, depositor, limit, offset, reverse, network }, { chainManager }) => {
     const statusMap: Record<string, number> = {
       DEPOSIT_PERIOD: 1, VOTING_PERIOD: 2, PASSED: 3, REJECTED: 4, FAILED: 5,
