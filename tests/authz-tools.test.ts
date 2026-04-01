@@ -35,8 +35,13 @@ vi.mock('@initia/initia.js/vip', () => ({
 }));
 
 vi.mock('@initia/initia.js/util', () => ({
-  AccAddress: { validate: (a: string) => a.startsWith('init1') },
+  AccAddress: {
+    validate: (a: string) => a.startsWith('init1'),
+    fromHex: (a: string) => 'init1' + a.replace('0x', '').slice(0, 10),
+    toHex: (a: string) => '0x' + a.slice(5),
+  },
   isValidEvmAddress: (a: string) => /^0x[0-9a-fA-F]{40}$/.test(a),
+  toChecksumAddress: (a: string) => a,
 }));
 
 vi.mock('@initia/initia.js/client', () => ({
@@ -168,7 +173,7 @@ describe('authz_grants tool', () => {
     expect(mockGrants).not.toHaveBeenCalled();
   });
 
-  it('accepts a valid EVM address as granter', async () => {
+  it('accepts a valid EVM address as granter (converted to bech32)', async () => {
     const tool = registry.get('authz_grants')!;
     const result = await tool.handler(
       { chain: 'minievm', granter: VALID_EVM },
@@ -176,7 +181,9 @@ describe('authz_grants tool', () => {
     );
 
     expect(result.isError).toBeFalsy();
-    expect(mockGranterGrants).toHaveBeenCalledWith({ granter: VALID_EVM });
+    // EVM address is normalized to bech32 before querying
+    const call = mockGranterGrants.mock.calls[0][0];
+    expect(call.granter).toMatch(/^init1/);
   });
 
   it('passes network param to getContext', async () => {

@@ -1,7 +1,6 @@
 import { registry } from './registry.js';
 import { addressParam, networkParam } from '../schemas/common.js';
 import { success } from '../response.js';
-import { resolveAddress } from './resolver.js';
 
 registry.register({
   name: 'portfolio_get',
@@ -9,8 +8,8 @@ registry.register({
   description: 'Get aggregated token balances across all chains (L1 + all L2s) for an address.',
   schema: { address: addressParam, network: networkParam },
   annotations: { readOnlyHint: true },
-  handler: async ({ address: rawAddress, network }, { chainManager }) => {
-    const address = resolveAddress(rawAddress, chainManager);
+  addressFields: { address: 'bech32' },
+  handler: async ({ address, network }, { chainManager }) => {
     const chains = await chainManager.listChains(network);
     const results = await Promise.allSettled(
       chains.map(async (c: any) => {
