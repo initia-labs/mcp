@@ -1,6 +1,6 @@
 {
   "name": "@initia/mcp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "An MCP control plane for the Initia's interwoven ecosystem",
   "type": "module",
   "files": [
@@ -32,7 +32,7 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@initia/initia.js": "2.0.0-rc.3",
+    "@initia/initia.js": "^2.0.0-rc.7",
     "@initia/ledger-key": "2.0.0-rc.2",
     "@ledgerhq/hw-transport-node-hid": "^6.32.1",
     "@modelcontextprotocol/sdk": "^1.28.0",

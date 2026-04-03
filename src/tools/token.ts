@@ -102,6 +102,7 @@ registry.register({
   },
   annotations: { readOnlyHint: true },
   addressFields: { address: 'bech32' },
+  formatCoins: { chainParam: 'chain' },
   handler: async ({ chain, address, denom, network }, { chainManager }) => {
     const ctx = await chainManager.getContext(chain, network);
     if (isContractDenom(denom)) {
