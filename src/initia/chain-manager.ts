@@ -145,40 +145,31 @@ export class ChainManager {
   }
 
   /**
-   * Get a chain context (typed, with gRPC client).
-   * Resolves the query to a chain in 2 steps:
-   *   1. Direct chainId match (e.g., "initiation-2", "minievm-1")
-   *   2. Type alias fallback (e.g., "initia" → find chain with chainType "initia")
-   * This makes aliases network-agnostic — works for both testnet and mainnet.
-   * Contexts are cached by network:chainId.
+   * Resolve a chain query to a chain info object.
+   * Resolution order:
+   *   1. chainName match (case-insensitive) — e.g., "Tucana", "noon"
+   *   2. Type alias fallback — e.g., "initia"/"l1" → chainType "initia"
+   *   3. Direct chainId match — e.g., "interwoven-1", "minievm-1"
    */
+  private resolveChain(chains: any[], chainQuery: string): any {
+    const q = chainQuery.toLowerCase();
+    return chains.find((c: any) => c.chainName?.toLowerCase() === q)
+      ?? chains.find((c: any) => c.chainType === (CHAIN_TYPE_ALIASES[q] ?? ''))
+      ?? chains.find((c: any) => c.chainId === chainQuery);
+  }
+
   async getChainInfo(chainQuery: string, network?: Network): Promise<any> {
     const net = this.resolveNetwork(network);
-    const provider = await this.getProvider(net);
-    const chains = await provider.listChains();
-    let chainInfo = chains.find((c: any) => c.chainId === chainQuery);
-    if (!chainInfo) {
-      const aliasType = CHAIN_TYPE_ALIASES[chainQuery.toLowerCase()];
-      if (aliasType) chainInfo = chains.find((c: any) => c.chainType === aliasType);
-    }
+    const chains = await (await this.getProvider(net)).listChains();
+    const chainInfo = this.resolveChain(chains, chainQuery);
     if (!chainInfo) throw new ChainNotFoundError(chainQuery);
     return chainInfo;
   }
 
   async getContext(chainQuery: string, network?: Network): Promise<any> {
     const net = this.resolveNetwork(network);
-    const provider = await this.getProvider(net);
-    const chains = await provider.listChains();
-
-    let chainInfo = chains.find((c: any) => c.chainId === chainQuery);
-
-    if (!chainInfo) {
-      const aliasType = CHAIN_TYPE_ALIASES[chainQuery.toLowerCase()];
-      if (aliasType) {
-        chainInfo = chains.find((c: any) => c.chainType === aliasType);
-      }
-    }
-
+    const chains = await (await this.getProvider(net)).listChains();
+    const chainInfo = this.resolveChain(chains, chainQuery);
     if (!chainInfo) throw new ChainNotFoundError(chainQuery);
 
     const chainId: string = chainInfo.chainId;
