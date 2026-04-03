@@ -65,7 +65,11 @@ export function zodToCittyArgs(schema: ZodShape): Record<string, ArgDef> {
 
     const arg: ArgDef = { type, required: !optional };
     if (description) arg.description = description;
-    if (defaultValue !== undefined) arg.default = defaultValue;
+    if (defaultValue !== undefined) {
+      // citty passes defaults to node:util.parseArgs which requires type-matched defaults.
+      // numeric defaults on string-typed args cause parseArgs to throw, silently breaking all arg parsing.
+      arg.default = type === 'string' && typeof defaultValue === 'number' ? String(defaultValue) : defaultValue;
+    }
 
     result[cliKey] = arg;
   }

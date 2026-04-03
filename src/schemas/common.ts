@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const chainParam = z.string().describe('Chain type alias (e.g., "initia", "minievm", "minimove", "miniwasm") or exact chain ID. Prefer aliases — they auto-resolve to the correct chain ID for the selected network.');
+export const chainParam = z.string().optional().default('initia').describe('Chain name or chain ID. Defaults to L1 ("initia"). L2 examples: "Cabal", "Echelon", "Inertia".');
 export const networkParam = z.enum(['mainnet', 'testnet']).optional().describe('Network to use. Defaults to mainnet.');
 export const addressParam = z.string().describe('Address in bech32, hex, or .init format. Use "me" for the signer\'s own address.');
 export const denomParam = z.string().describe('Token denomination (e.g., "uinit")');

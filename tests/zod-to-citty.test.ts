@@ -30,7 +30,7 @@ describe('zodToCittyArgs', () => {
 
   it('converts default value', () => {
     const args = zodToCittyArgs({ limit: z.number().optional().default(10).describe('Limit') });
-    expect(args.limit.default).toBe(10);
+    expect(args.limit.default).toBe('10');
     expect(args.limit.required).toBe(false);
   });
 
