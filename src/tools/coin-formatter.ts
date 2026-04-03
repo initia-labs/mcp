@@ -15,7 +15,10 @@ export function isContractDenom(denom: string): boolean {
 export function stripDenomPrefix(denom: string): string {
   if (denom.startsWith('evm/')) return denom.slice(4);
   if (denom.startsWith('cw20:')) return denom.slice(5);
-  if (denom.startsWith('move/')) return denom.slice(5);
+  if (denom.startsWith('move/')) {
+    const addr = denom.slice(5);
+    return addr.startsWith('0x') ? addr : `0x${addr}`;
+  }
   return denom;
 }
 
@@ -48,7 +51,8 @@ export async function resolveDenom(
         : undefined;
       const decimals = displayUnit?.exponent
         ?? Math.max(0, ...(md.denomUnits?.map((u: any) => u.exponent) ?? [0]));
-      meta = { symbol: md.symbol || displayName || denom, decimals };
+      const symbol = displayUnit?.denom?.toUpperCase() || md.symbol || denom;
+      meta = { symbol, decimals };
     }
 
     cache.set(denom, meta);
@@ -57,6 +61,27 @@ export async function resolveDenom(
     cache.set(denom, null);
     return null;
   }
+}
+
+const DEC_PRECISION = 18;
+
+async function enrichCoin(
+  obj: Record<string, unknown>,
+  isDecCoin: boolean,
+  ctx: any,
+  cache: Map<string, DenomMeta | null>,
+): Promise<unknown> {
+  const rawAmount = String(obj.amount);
+  const meta = await resolveDenom(obj.denom as string, ctx, cache);
+  if (!meta) return obj;
+  const decimals = isDecCoin ? meta.decimals + DEC_PRECISION : meta.decimals;
+  const amount = isDecCoin ? rawAmount : truncateDecAmount(rawAmount);
+  return {
+    ...obj,
+    symbol: meta.symbol,
+    decimals: meta.decimals,
+    formatted: `${formatTokenAmount(amount, decimals)} ${meta.symbol}`,
+  };
 }
 
 export async function enrichCoins(
@@ -72,27 +97,29 @@ export async function enrichCoins(
 
   const obj = data as Record<string, unknown>;
 
+  // Coin-like: { denom, amount }
   if (
     typeof obj.denom === 'string' &&
     (typeof obj.amount === 'string' || typeof obj.amount === 'number')
   ) {
-    const rawAmount = String(obj.amount);
-    const meta = await resolveDenom(obj.denom, ctx, cache);
-    if (meta) {
-      const intAmount = truncateDecAmount(rawAmount);
-      return {
-        ...obj,
-        symbol: meta.symbol,
-        decimals: meta.decimals,
-        formatted: `${formatTokenAmount(intAmount, meta.decimals)} ${meta.symbol}`,
-      };
-    }
-    return obj;
+    return enrichCoin(obj, false, ctx, cache);
   }
 
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
-    result[key] = await enrichCoins(value, ctx, cache);
+    // DecCoin array: { denom, decCoins: [{ denom, amount }] }
+    if (key === 'decCoins' && Array.isArray(value)) {
+      result[key] = await Promise.all(
+        value.map((item: unknown) => {
+          if (item && typeof item === 'object' && 'denom' in item && 'amount' in item) {
+            return enrichCoin(item as Record<string, unknown>, true, ctx, cache);
+          }
+          return enrichCoins(item, ctx, cache);
+        }),
+      );
+    } else {
+      result[key] = await enrichCoins(value, ctx, cache);
+    }
   }
   return result;
 }

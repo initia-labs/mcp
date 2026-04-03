@@ -9,6 +9,7 @@ registry.register({
   schema: { chain: chainParam, delegatorAddr: addressParam, ...paginationParams, network: networkParam },
   annotations: { readOnlyHint: true },
   addressFields: { delegatorAddr: 'bech32' },
+  formatCoins: { chainParam: 'chain' },
   handler: async ({ chain, delegatorAddr, limit, offset, reverse, network }, { chainManager }) => {
     const ctx = await chainManager.getContext(chain, network);
     const pagination = { limit: BigInt(limit ?? 10), offset: BigInt(offset ?? 0), reverse };

@@ -9,6 +9,7 @@ registry.register({
   schema: { chain: chainParam, delegatorAddr: addressParam, network: networkParam },
   annotations: { readOnlyHint: true },
   addressFields: { delegatorAddr: 'bech32' },
+  formatCoins: { chainParam: 'chain' },
   handler: async ({ chain, delegatorAddr, network }, { chainManager }) => {
     const ctx = await chainManager.getContext(chain, network);
     const result = await ctx.client.distribution.delegationTotalRewards({

@@ -3,6 +3,7 @@ import type { CallToolResult, ToolAnnotations } from '@modelcontextprotocol/sdk/
 import type { ChainManager } from '../initia/chain-manager.js';
 import type { AppConfig } from '../config/index.js';
 import { withAddressNormalization } from './address-normalizer.js';
+import { withCoinFormatting } from './coin-formatter.js';
 
 export type ZodShape = Record<string, z.ZodTypeAny>;
 
@@ -20,6 +21,7 @@ export interface ToolDef<T extends ZodShape = ZodShape> {
   schema: T;
   annotations: ToolAnnotations;
   addressFields?: Record<string, AddressFormat>;
+  formatCoins?: { chainParam: string };
   handler: (params: { [K in keyof T]: z.infer<T[K]> }, ctx: ToolContext) => Promise<CallToolResult>;
   cliOverrides?: {
     flatArgs: ZodShape;
@@ -37,6 +39,9 @@ export class ToolRegistry {
     }
     if (def.addressFields) {
       (def as any).handler = withAddressNormalization(def.handler as any, def.addressFields);
+    }
+    if (def.formatCoins) {
+      (def as any).handler = withCoinFormatting(def.handler as any, def.formatCoins);
     }
     this.tools.set(def.name, def as ToolDef);
   }

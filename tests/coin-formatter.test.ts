@@ -14,7 +14,8 @@ describe('isContractDenom', () => {
 describe('stripDenomPrefix', () => {
   it('strips evm/ prefix', () => { expect(stripDenomPrefix('evm/0x1234abcd')).toBe('0x1234abcd'); });
   it('strips cw20: prefix', () => { expect(stripDenomPrefix('cw20:init1abc')).toBe('init1abc'); });
-  it('strips move/ prefix', () => { expect(stripDenomPrefix('move/0x1::module::Name')).toBe('0x1::module::Name'); });
+  it('strips move/ prefix with 0x', () => { expect(stripDenomPrefix('move/0x1::module::Name')).toBe('0x1::module::Name'); });
+  it('strips move/ prefix and adds 0x if missing', () => { expect(stripDenomPrefix('move/abcd1234')).toBe('0xabcd1234'); });
   it('returns native denoms unchanged', () => { expect(stripDenomPrefix('uinit')).toBe('uinit'); });
 });
 
