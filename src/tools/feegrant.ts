@@ -39,7 +39,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { grantee: 'bech32' },
   handler: async ({ chain, grantee, spendLimit, expiration, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
@@ -83,7 +83,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { grantee: 'bech32' },
   handler: async ({ chain, grantee, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();

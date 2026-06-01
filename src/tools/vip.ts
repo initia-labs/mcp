@@ -134,7 +134,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ metadata, amount, releaseTime, validator: rawValidator, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -158,7 +158,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ metadata, amount, releaseTime, validator: rawValidator, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -184,7 +184,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ metadata, amount, srcReleaseTime, srcValidator: rawSrc, dstReleaseTime, dstValidator: rawDst, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -215,7 +215,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ metadata, amount, releaseTime, validator: rawValidator, newReleaseTime, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -243,7 +243,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ cycle, votes, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -267,7 +267,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ cycle, votes, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -286,7 +286,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -309,7 +309,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -334,7 +334,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ lpMetadata, coinAAmount, coinBAmount, minLiquidity, releaseTime, validator: rawValidator, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);
@@ -366,7 +366,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ lpMetadata, amounts, minLiquidity, releaseTime, validator: rawValidator, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const { vip, ctx } = await getVip(chainManager, network);

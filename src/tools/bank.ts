@@ -19,7 +19,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { 'sends[].to': 'bech32' },
   handler: async ({ chain, sends, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();

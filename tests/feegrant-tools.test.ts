@@ -143,11 +143,11 @@ describe('feegrant_allowances tool', () => {
 });
 
 describe('feegrant_grant tool', () => {
-  it('registers with destructiveHint false', async () => {
+  it('registers with destructiveHint true', async () => {
     const { registry } = await import('../src/tools/index.js');
     const tool = registry.get('feegrant_grant');
     expect(tool).toBeDefined();
-    expect(tool!.annotations.destructiveHint).toBe(false);
+    expect(tool!.annotations.destructiveHint).toBe(true);
   });
 
   it('rejects when neither spendLimit nor expiration is provided', async () => {
@@ -187,11 +187,11 @@ describe('feegrant_grant tool', () => {
 });
 
 describe('feegrant_revoke tool', () => {
-  it('registers with destructiveHint false', async () => {
+  it('registers with destructiveHint true', async () => {
     const { registry } = await import('../src/tools/index.js');
     const tool = registry.get('feegrant_revoke');
     expect(tool).toBeDefined();
-    expect(tool!.annotations.destructiveHint).toBe(false);
+    expect(tool!.annotations.destructiveHint).toBe(true);
   });
 
   it('validates grantee address', async () => {

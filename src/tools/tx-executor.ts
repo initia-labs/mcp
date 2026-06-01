@@ -55,20 +55,28 @@ export async function executeMutation(
   logger.info('Broadcasting transaction', { chainId, msgCount: msgs.length });
 
   let result: any;
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
   try {
     const broadcastPromise = ctx.signAndBroadcast(msgs, { memo, waitForConfirmation: true });
 
-    result = config.key.type === 'ledger'
-      ? await Promise.race([
-          broadcastPromise,
-          new Promise((_, reject) =>
-            setTimeout(
-              () => reject(new LedgerSignError('Signing timed out. Check device is connected and confirm on screen.')),
-              LEDGER_SIGN_TIMEOUT,
-            ),
-          ),
-        ])
-      : await broadcastPromise;
+    if (config.key.type === 'ledger') {
+      // signAndBroadcast is not cancellable: if the timeout wins the race, signing
+      // may still complete and the tx may still be broadcast. Swallow a late
+      // rejection so the orphaned promise can't surface as an unhandled rejection.
+      broadcastPromise.catch(() => {});
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutHandle = setTimeout(
+          () => reject(new LedgerSignError(
+            'Signing timed out after 90s. The transaction may still have been broadcast — '
+            + 'check your account or an explorer before retrying to avoid a double-spend.',
+          )),
+          LEDGER_SIGN_TIMEOUT,
+        );
+      });
+      result = await Promise.race([broadcastPromise, timeoutPromise]);
+    } else {
+      result = await broadcastPromise;
+    }
   } catch (e: unknown) {
     if (config.key.type === 'ledger' && !(e instanceof LedgerSignError)) {
       const { LedgerError } = await import('@initia/ledger-key');
@@ -80,6 +88,8 @@ export async function executeMutation(
       }
     }
     throw e;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
   }
 
   logger.info('Transaction broadcast', { chainId, txHash: result.txHash, code: result.code });

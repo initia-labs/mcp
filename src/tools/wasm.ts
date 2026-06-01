@@ -138,7 +138,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ chain, wasmByteCode, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);
@@ -168,7 +168,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { admin: 'bech32' },
   handler: async ({ chain, codeId, label, msg, admin, funds, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
@@ -272,7 +272,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { contractAddress: 'bech32' },
   handler: async ({ chain, contractAddress, executeMsg, funds, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();

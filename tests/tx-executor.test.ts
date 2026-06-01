@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { executeMutation, MutationParams } from '../src/tools/tx-executor.js';
+import { executeMutation, MutationParams, LEDGER_SIGN_TIMEOUT } from '../src/tools/tx-executor.js';
 import { AppConfig } from '../src/config/index.js';
 
 const baseConfig: AppConfig = {
@@ -103,6 +103,28 @@ describe('executeMutation', () => {
     const result = await executeMutation(params, baseConfig, mockCtx);
     const data = JSON.parse(result.content[0].text as string);
     expect(data.memo).toBe('sim memo');
+  });
+
+  it('warns the tx may already be broadcast when ledger signing times out', async () => {
+    vi.useFakeTimers();
+    try {
+      const ledgerConfig: AppConfig = {
+        ...baseConfig,
+        key: { type: 'ledger', index: 0, ledgerApp: 'ethereum' },
+      };
+      const mockCtx = {
+        estimateGas: vi.fn().mockResolvedValue({ gasLimit: 100000n }),
+        signAndBroadcast: vi.fn(() => new Promise(() => {})), // never settles
+      };
+      const params: MutationParams = { msgs: [{}], chainId: 'test', dryRun: false, confirm: true };
+      const p = executeMutation(params, ledgerConfig, mockCtx);
+      p.catch(() => {}); // avoid unhandled rejection before assertion
+      await vi.advanceTimersByTimeAsync(LEDGER_SIGN_TIMEOUT + 1000);
+      // Must NOT imply the tx was not sent — it may have been broadcast.
+      await expect(p).rejects.toThrow(/may still have been broadcast/i);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should include ledger notice in simulate response', async () => {

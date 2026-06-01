@@ -156,7 +156,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ amount, sourceChainId, sourceDenom, destChainId, destDenom, receiver, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const provider = await chainManager.getProvider(network);
@@ -208,7 +208,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { to: 'bech32' },
   handler: async ({ bridgeId, to, amount, denom, data, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
@@ -240,7 +240,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { to: 'bech32' },
   handler: async ({ chain, to, amount, denom, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
