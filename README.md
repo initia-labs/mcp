@@ -130,11 +130,26 @@ initctl completion fish | source    # fish
 | `INITIA_KEY_INDEX` | No | `0` | HD derivation index (for mnemonic/ledger) |
 | `INITIA_LEDGER_APP` | No | `ethereum` | Ledger app: `ethereum` or `cosmos` |
 | `INITIA_NETWORK` | No | `mainnet` | `mainnet` or `testnet` |
-| `AUTO_CONFIRM` | No | `false` | Skip confirmation for mutations (MCP only) |
+| `AUTO_CONFIRM` | No | `false` | Skip the server-side confirm gate for mutations (MCP only). See [Security & Approvals](#security--approvals). |
 | `INITIA_LOG_LEVEL` | No | `info` | `debug`, `info`, `warn`, `error` |
 | `INITIA_USE_SCAN_API` | No | `false` | Use Scan API for enhanced chain data |
 
 Without a signer key, read-only tools still work. Mutation tools return `SIGNER_REQUIRED`.
+
+## Security & Approvals
+
+This server can sign and broadcast real transactions. Approvals happen in two independent layers:
+
+1. **MCP client approval (primary).** Your MCP client — Claude Code, Codex, Claude Desktop, Gemini CLI — decides whether each tool call runs, normally by prompting you. This is the human gate. The server cannot force it, and a client configured to auto-approve (e.g. "always allow") will not prompt. Treat this as your main safety control.
+2. **Server confirm gate (secondary).** Every mutation tool takes a `confirm` flag (default `false`). Without it the tool only simulates and returns the estimated gas and decoded messages; it broadcasts only when called again with `confirm: true`. Because the *agent* supplies `confirm`, this guards against accidental one-shot broadcasts — it is not a substitute for human approval on its own.
+
+`AUTO_CONFIRM=true` removes layer 2 for mutations. Combined with a client set to auto-approve the tool, this enables **fully unattended signing and broadcasting**. Use it only on `testnet` or with low-value keys.
+
+- `wasm_migrate`, `wasm_update_admin`, and `wasm_clear_admin` are treated as destructive and always require explicit `confirm: true`, even when `AUTO_CONFIRM=true`. **Every other mutation tool** — `bank_send`, `evm_send`, bridges, contract deploy/execute (`wasm_*`, `move_*`, `evm_deploy`), `governance_vote`, `staking_manage`, `ibc_transfer`, `feegrant_*`, and the VIP tools — is not in this exception: with `AUTO_CONFIRM=true` they broadcast automatically.
+- All state-changing tools are annotated `destructiveHint: true` so clients that surface this hint can warn before running them. Note this MCP annotation is independent of the `AUTO_CONFIRM` bypass above: a tool can be `destructiveHint: true` and still auto-broadcast under `AUTO_CONFIRM` (only the three wasm admin tools are gated server-side).
+- `INITIA_NETWORK` defaults to **`mainnet`** — set `INITIA_NETWORK=testnet` for experimentation.
+
+**Key handling.** `INITIA_KEY` is read from the environment and the raw mnemonic/private key is discarded after key derivation at startup. For mainnet or high-value keys prefer a **Ledger** (`INITIA_KEY="ledger"`): it adds a hardware confirmation that no software setting — including `AUTO_CONFIRM` — can bypass. Ledger signing can still time out after 90s even if the transaction was broadcast; check your account or a block explorer before retrying to avoid duplicate spends.
 
 ## Tools (107)
 

@@ -64,7 +64,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ chain, proposalId, option, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);

@@ -198,7 +198,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ chain, input, value, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);
@@ -223,7 +223,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   addressFields: { contractAddress: 'hex' },
   handler: async ({ chain, contractAddress, input, value, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();

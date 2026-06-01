@@ -225,7 +225,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ chain, codeBytes, upgradePolicy, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);
@@ -251,7 +251,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ chain, codeBytes, typeArgs, args, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);
@@ -278,7 +278,7 @@ registry.register({
     memo: memoParam,
     network: networkParam,
   },
-  annotations: { readOnlyHint: false, destructiveHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   handler: async ({ chain, moduleAddress, moduleName, functionName, typeArgs, args, dryRun, confirm, memo, network }, { chainManager, config }) => {
     chainManager.requireSigner();
     const ctx = await chainManager.getContext(chain, network);

@@ -202,6 +202,21 @@ describe('MCP Protocol Integration', () => {
     }
   });
 
+  it('mutation tools are annotated as destructiveHint=true', async () => {
+    // Broadcasting a transaction is irreversible (spends gas, commits on-chain
+    // state), so every state-changing tool must advertise destructiveHint=true
+    // for clients that gate approvals on it.
+    const result = await client.listTools();
+    const mutations = result.tools.filter(t => t.annotations?.readOnlyHint === false);
+    expect(mutations.length).toBeGreaterThan(0);
+    for (const tool of mutations) {
+      expect(
+        tool.annotations?.destructiveHint,
+        `${tool.name} broadcasts a tx, so destructiveHint must be true`,
+      ).toBe(true);
+    }
+  });
+
   it('handles concurrent tool calls without errors', async () => {
     const results = await Promise.all([
       client.callTool({ name: 'chain_list', arguments: {} }),
