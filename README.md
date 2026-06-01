@@ -149,7 +149,7 @@ This server can sign and broadcast real transactions. Approvals happen in two in
 - All state-changing tools are annotated `destructiveHint: true` so clients that surface this hint can warn before running them. Note this MCP annotation is independent of the `AUTO_CONFIRM` bypass above: a tool can be `destructiveHint: true` and still auto-broadcast under `AUTO_CONFIRM` (only the three wasm admin tools are gated server-side).
 - `INITIA_NETWORK` defaults to **`mainnet`** — set `INITIA_NETWORK=testnet` for experimentation.
 
-**Key handling.** `INITIA_KEY` is read from the environment and the raw mnemonic/private key is discarded after key derivation at startup. For mainnet or high-value keys prefer a **Ledger** (`INITIA_KEY="ledger"`): it adds a hardware confirmation that no software setting — including `AUTO_CONFIRM` — can bypass.
+**Key handling.** `INITIA_KEY` is read from the environment and the raw mnemonic/private key is discarded after key derivation at startup. For mainnet or high-value keys prefer a **Ledger** (`INITIA_KEY="ledger"`): it adds a hardware confirmation that no software setting — including `AUTO_CONFIRM` — can bypass. Ledger signing can still time out after 90s even if the transaction was broadcast; check your account or a block explorer before retrying to avoid duplicate spends.
 
 ## Tools (107)
 
